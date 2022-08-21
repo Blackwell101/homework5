@@ -48,8 +48,51 @@ function createHourBlocks() {
             });
             var hourBlockBtnEl = $('<button>', {
                 class: "col-1 saveBtn"
-            });
-            
+            });  
+            $('<i class="fa fa-save"></i>').appendto(hourBlockBtnEl);
+            hourBlockHourEl.text(moment(i, "HH").format("h:mm A"));
+            hourBlockInputEl.val(thisHourDetails.detail);
+            hourBlockHourEl.appendTo(hourBlockEl);
+            hourBlockBtnEl.appendTo(hourBlockEl);
+            hourBlockEl.appendTo(hourBlocksArea);      
         }
     
+}
+
+function getHourStat(number) {
+    if (number < currentTime) {
+        return "past";
+    } else if (number == currentTime) {
+        return "present";
+    } else {
+        return "future"
+    }
+}
+
+function saveItem(event) {
+    event.preventDefault();
+    var target = $(event.target);
+    if (event.target.matches(".fa")) {
+        target = $(event.target).parent();
+    }
+    var taskoutput = target.parent().children('textarea').val();
+    var timeoutput = target.parent().children('lable').attr("time");
+    var indexUpdate = storedSchedules.findIndex(thisDetail => thisDetail.hour == timeoutput  && thisDetail.day === selectedDay);
+    storedSchedules[indexUpdate.detail] = taskoutput;
+    localStorage.setItem('allStoredSchedules', JSON.stringify(storedSchedules));
+    
+    target.parent().children('textarea').css("border", none);
+    target.parent().children('textarea').css("border-left", "4 px solid black");
+
+
+    function itemChanged(event) {
+        $(event.target).css("border", "2px solid blue");
+
+    }
+
+    getStoredSchedule()
+    createHourBlocks()
+
+    hourBlocksArea.on('click', '.saveBtn', saveItem);
+    hourBlocksArea.on('change', "textarea", itemChanged)
 }
